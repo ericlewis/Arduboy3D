@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#if _WIN32
+#if defined(_WIN32) || defined(_PLAYDATE)
 #include <math.h>
 #endif
 #include "Defines.h"
@@ -26,12 +26,12 @@ extern const int16_t sinTable[FIXED_ANGLE_MAX] PROGMEM;
 
 inline int16_t FixedSin(uint8_t angle)
 {
-	return pgm_read_word(&sinTable[angle]);
+	return sinTable[angle];
 }
 
 inline int16_t FixedCos(uint8_t angle)
 {
-	return pgm_read_word(&sinTable[FIXED_ANGLE_WRAP(FIXED_ANGLE_90 - angle)]);
+	return sinTable[FIXED_ANGLE_WRAP(FIXED_ANGLE_90 - angle)];
 }
 
 uint16_t Random();

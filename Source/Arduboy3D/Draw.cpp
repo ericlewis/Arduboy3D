@@ -300,15 +300,15 @@ void Renderer::DrawWallSegment(int16_t x1, int16_t w1, int16_t x2, int16_t w2, b
 		return;
 
 	const uint8_t* texPtr = texture;
-	uint8_t numLines = pgm_read_byte(texPtr++);
+	uint8_t numLines = *texPtr++;
 	while (numLines)
 	{
 		numLines--;
 		
-		uint8_t u1 = pgm_read_byte(texPtr++);
-		uint8_t v1 = pgm_read_byte(texPtr++);
-		uint8_t u2 = pgm_read_byte(texPtr++);
-		uint8_t v2 = pgm_read_byte(texPtr++);
+		uint8_t u1 = *texPtr++;
+		uint8_t v1 = *texPtr++;
+		uint8_t u2 = *texPtr++;
+		uint8_t v2 = *texPtr++;
 
 		//if(u1clip != 0 || u2clip != 128)
 		//	continue;
@@ -830,22 +830,22 @@ void DrawScaledOutline(const uint16_t* data, int8_t x, int8_t y, uint8_t halfSiz
 			}
 			else
 			{
-				const uint8_t u = pgm_read_byte(&lut[i >> shiftAmount]);
+				const uint8_t u = lut[i >> shiftAmount];
 
 				if (wasVisible)
 				{
 					leftTransparencyAndColourColumn = middleColourColumn & middleTransparencyColumn;
 					middleColourColumn = rightColourColumn;
 					middleTransparencyColumn = rightTransparencyColumn;
-					rightTransparencyColumn = pgm_read_word(&data[u * 2]);
-					rightColourColumn = pgm_read_word(&data[u * 2 + 1]) ^ invertMask;
+					rightTransparencyColumn = data[u * 2];
+					rightColourColumn = data[u * 2 + 1] ^ invertMask;
 					leftRightOutlineColumn = leftTransparencyAndColourColumn | (rightColourColumn & rightTransparencyColumn);
 				}
 				else
 				{
 					leftTransparencyAndColourColumn = 0;
-					rightTransparencyColumn = pgm_read_word(&data[u * 2]);
-					rightColourColumn = pgm_read_word(&data[u * 2 + 1]) ^ invertMask;
+					rightTransparencyColumn = data[u * 2];
+					rightColourColumn = data[u * 2 + 1] ^ invertMask;
 					middleColourColumn = rightColourColumn;
 					middleTransparencyColumn = rightTransparencyColumn;
 					leftRightOutlineColumn = (rightColourColumn & rightTransparencyColumn);
@@ -856,8 +856,8 @@ void DrawScaledOutline(const uint16_t* data, int8_t x, int8_t y, uint8_t halfSiz
 			uint8_t bufferPos = (outY & 7);
 			uint8_t* screenBuffer = Platform::GetScreenBuffer() + outX + ((outY & 0x38) << 4);
 			uint8_t localBuffer = *screenBuffer;
-			uint8_t writeMask = pgm_read_byte(&scaleDrawWriteMasks[bufferPos]);
-			
+			uint8_t writeMask = scaleDrawWriteMasks[bufferPos];
+
 			bool upIsOpaqueAndWhite = false;
 			bool middleIsOpaque = false;
 			bool downIsOpaque = false;
@@ -881,8 +881,8 @@ void DrawScaledOutline(const uint16_t* data, int8_t x, int8_t y, uint8_t halfSiz
 				}
 				else
 				{
-					uint8_t v = pgm_read_byte(&lut[j >> shiftAmount]);
-					uint16_t mask = pgm_read_word(&scaleDrawReadMasks[v]);
+					uint8_t v = lut[j >> shiftAmount];
+					uint16_t mask = scaleDrawReadMasks[v];
 					downLeftOrRightIsOutline = (leftRightOutlineColumn & mask) != 0;
 					downIsOpaque = (middleTransparencyColumn & mask) != 0;
 					downIsWhite = (middleColourColumn & mask) != 0;
@@ -950,19 +950,19 @@ inline void DrawScaledNoOutline(const uint16_t* data, int8_t x, int8_t y, uint8_
 
 		if (isVisible)
 		{
-			const uint8_t u = pgm_read_byte(&lut[i / scaleMultiplier]);
+			const uint8_t u = lut[i / scaleMultiplier];
 			int8_t outY = y >= 0 ? y : 0;
 			uint8_t bufferPos = (outY & 7);
 			uint8_t* screenBuffer = Platform::GetScreenBuffer() + outX + ((outY & 0x38) << 4);
 			uint8_t localBuffer = *screenBuffer;
-			uint8_t writeMask = pgm_read_byte(&scaleDrawWriteMasks[bufferPos]);
-			uint16_t transparencyColumn = pgm_read_word(&data[u * 2]);
-			uint16_t colourColumn = pgm_read_word(&data[u * 2 + 1]);
+			uint8_t writeMask = scaleDrawWriteMasks[bufferPos];
+			uint16_t transparencyColumn = data[u * 2];
+			uint16_t colourColumn = data[u * 2 + 1];
 
 			for (uint8_t j = j0; j < j1; j += scaleMultiplier)
 			{
-				uint8_t v = pgm_read_byte(&lut[j / scaleMultiplier]);
-				uint16_t mask = pgm_read_word(&scaleDrawReadMasks[v]);
+				uint8_t v = lut[j / scaleMultiplier];
+				uint16_t mask = scaleDrawReadMasks[v];
 
 				for (uint8_t k = 0; k < scaleMultiplier; k++)
 				{
@@ -1258,7 +1258,7 @@ void Renderer::DrawBar(uint8_t* screenPtr, const uint8_t* iconData, uint8_t amou
 
 	while (x < iconWidth)
 	{
-		screenPtr[x] = pgm_read_byte(&iconData[x]);
+		screenPtr[x] = iconData[x];
 		x++;
 	}
 

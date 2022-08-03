@@ -15,7 +15,7 @@ void Font::PrintString(const char* str, uint8_t line, uint8_t x, uint8_t colour)
 
 	for (;;)
 	{
-		char c = pgm_read_byte(str++);
+		char c = *str++;
 		if (!c)
 			break;
 
@@ -60,9 +60,9 @@ void Font::DrawChar(uint8_t* screenPtr, char c, uint8_t xorMask)
 	const uint8_t index = ((unsigned char)(c)) - firstGlyphIndex;
 	const uint8_t* fontPtr = fontPageData + glyphWidth * index;
 
-	screenPtr[0] = xorMask ^ pgm_read_byte(&fontPtr[0]);
-	screenPtr[1] = xorMask ^ pgm_read_byte(&fontPtr[1]);
-	screenPtr[2] = xorMask ^ pgm_read_byte(&fontPtr[2]);
-	screenPtr[3] = xorMask ^ pgm_read_byte(&fontPtr[3]);
+	screenPtr[0] = xorMask ^ fontPtr[0];
+	screenPtr[1] = xorMask ^ fontPtr[1];
+	screenPtr[2] = xorMask ^ fontPtr[2];
+	screenPtr[3] = xorMask ^ fontPtr[3];
 }
 

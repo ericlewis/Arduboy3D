@@ -1,6 +1,6 @@
 #pragma once
 
-#if _WIN32
+#if defined(_WIN32) || defined(_PLAYDATE)
 #include <stdint.h>
 #include <string.h>
 #define PROGMEM
@@ -14,7 +14,7 @@
 //#define pgm_read_ptr pgm_read_word
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_PLAYDATE)
 #define DISPLAY_WIDTH 128
 #define DISPLAY_HEIGHT 64
 #else
